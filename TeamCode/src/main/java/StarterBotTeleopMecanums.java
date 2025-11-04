@@ -75,6 +75,7 @@ public class StarterBotTeleopMecanums extends OpMode {
     final double LAUNCHER_MIN_VELOCITY = 1075;
 
     // Declare OpMode members.
+
     private DcMotor leftFrontDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor leftBackDrive = null;
@@ -82,6 +83,8 @@ public class StarterBotTeleopMecanums extends OpMode {
     private DcMotorEx launcher = null;
     private CRServo leftFeeder = null;
     private CRServo rightFeeder = null;
+    private CRServo artifactDeflector = null;
+
 
     ElapsedTime feederTimer = new ElapsedTime();
 
@@ -115,6 +118,7 @@ public class StarterBotTeleopMecanums extends OpMode {
     double rightFrontPower;
     double leftBackPower;
     double rightBackPower;
+
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -182,6 +186,11 @@ public class StarterBotTeleopMecanums extends OpMode {
          */
         leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        artifactDeflector = hardwareMap.get(CRServo.class, "artifact_deflector");
+        artifactDeflector.setDirection(DcMotorSimple.Direction.FORWARD);
+        artifactDeflector.setPower(0);
+
+
         /*
          * Tell the driver that initialization is complete.
          */
@@ -240,6 +249,11 @@ public class StarterBotTeleopMecanums extends OpMode {
         telemetry.addData("State", launchState);
         telemetry.addData("motorSpeed", launcher.getVelocity());
 
+        // --- Artifact Deflector Control ---
+        double deflectorPower = -gamepad2.right_stick_y; // use gamepad2 right stick for deflector
+        if (Math.abs(deflectorPower) < 0.1) deflectorPower = 0;
+        artifactDeflector.setPower(deflectorPower);
+        telemetry.addData("Deflector Power", deflectorPower);
     }
 
     /*
